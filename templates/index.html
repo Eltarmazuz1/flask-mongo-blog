@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Blog</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Welcome to My Blog</h1>
+    <a href="{{ url_for('create_post') }}" class="btn">Create New Post</a>
+  </header>
+
+  {# Convert posts to a list so we can loop over it multiple times #}
+  {% set posts_list = posts|list %}
+
+  {# Create a filtered list of posts that have an image_url #}
+  {% set image_posts = posts_list|selectattr('image_url')|list %}
+  {% if image_posts %}
+  <div class="slider">
+    <div class="slides">
+      {% for post in image_posts %}
+      <div class="slide">
+        <img src="{{ post.image_url }}" alt="{{ post.title }}">
+        <div class="caption">{{ post.title }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    <button class="prev" onclick="prevSlide()">&#10094;</button>
+    <button class="next" onclick="nextSlide()">&#10095;</button>
+  </div>
+  {% endif %}
+
+  <!-- Posts List (all posts) -->
+  {% if posts_list %}
+  <div class="posts">
+    {% for post in posts_list %}
+    <div class="post">
+      {% if post.image_url %}
+      <!-- <img src="{{ post.image_url }}" alt="{{ post.title }}" class="post-image"> -->
+      {% endif %}
+      <h2>{{ post.title }}</h2>
+      <p>{{ post.content[:100] }}...</p>
+      <a href="{{ url_for('view_post', post_id=post._id|string) }}" class="read-more">Read More</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>No posts found.</p>
+  {% endif %}
+
+  <script src="{{ url_for('static', filename='js/slider.js') }}"></script>
+</body>
+</html>
